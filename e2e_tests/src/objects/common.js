@@ -1,11 +1,5 @@
-const qawolf = require('qawolf');
-const path = require('path');
-const fs = require('fs');
 const { waitForWSSubset } = require('@root/_utils/websocket');
-
-const LOGIN_STATE_PATH = './e2e_tests/states/login.json';
-const VIRTUAL_SIGNUP_STATE = './e2e_tests/states/vrtc.json';
-const REAL_SIGNUP_STATE = './e2e_tests/states/real.json';
+const context_options = require('@root/_config/context');
 
 class Common {
     constructor(page) {
@@ -44,16 +38,8 @@ class Common {
     async switchVirtualAccount() {
         await this.waitForAccountInfoDropdown();
         await this.clickOnAccountInfoDropdown();
-        const element = await this.page.evaluate(`document.querySelector('.dc-content-expander')`);
-        if (element && !element.classList.contains('dc-content-expander--expanded')) {
-            await this.page.click('.dc-content-expander');
-        }
-        const account_switcher_virtual =
-            '.acc-switcher__wrapper > .acc-switcher__list > .dc-tabs > .dc-tabs__list > .dc-tabs__item:nth-child(2)';
-        await this.page.waitForSelector(account_switcher_virtual);
-        await this.page.click(account_switcher_virtual);
-        await this.page.waitForSelector('.acc-switcher__id');
-        await this.page.click('.acc-switcher__id');
+        await this.page.click('#demo_account_tab');
+        await this.page.click('.acc-switcher__accounts');
     }
 
     async waitForAccountInfoDropdown() {
@@ -80,7 +66,6 @@ class Common {
         await this.page.waitForSelector('text=Submit');
         await this.page.click('text=Submit');
         await this.page.waitForLoadState('load');
-        await qawolf.saveState(this.page, LOGIN_STATE_PATH);
     }
 
     /**
@@ -101,21 +86,48 @@ class Common {
 
         if (grant) {
             await this.page.click('#btnGrant');
-            await this.page.waitForLoadState('domcontentloaded');
+            await waitForWSSubset(this.page, {
+                echo_req: {
+                    authorize: 1,
+                },
+            });
         }
 
-        await qawolf.saveState(this.page, LOGIN_STATE_PATH);
+        // await this.saveState('LOGIN');
     }
 
-    async loadOrLogin(email, password) {
-        const is_login_done = this.checkIfStateExists(LOGIN_STATE_PATH);
-        if (!is_login_done) {
-            await this.login(email, password);
-        } else {
-            await qawolf.setState(this.page, LOGIN_STATE_PATH);
-            await this.page.reload();
-        }
+    // async loadOrLogin(email, password, context, POM) {
+    //     let new_context = context;
+    //     const is_login_done = this.checkIfStateExists('LOGIN');
+    //     if (!is_login_done) {
+    //         await this.login(email, password);
+    //     } else {
+    //         new_context = await this.setState('LOGIN', context, POM);
+    //         context.close();
+    //         await this.page.navigate();
+    //     }
+    //     return new_context;
+    // }
+
+    async saveState(target, context) {
+        const new_storage = await context.storageState();
+        process.env[target] = JSON.stringify(new_storage);
     }
+
+    // async setState(target, context, POM) {
+    //     const storageState = JSON.parse(process.env[target]);
+    //     const new_context = await context.browser().newContext({ storageState, ...context_options });
+    //     const current_page = this.page;
+    //     // Try to reuse the same Page Object Model
+    //     if (POM) {
+    //         this.page = new POM(await context.newPage());
+    //     } else {
+    //         this.page = new Common(await context.newPage());
+    //     }
+
+        // current_page.close();
+        // return new_context;
+    // }
 
     async isMobile() {
         const { width } = await this.page.viewportSize();
@@ -230,10 +242,6 @@ class Common {
                 '.dc-dialog__content > .account-signup > form > .account-signup__password-selection > .dc-btn'
             );
         }
-        await waitForWSSubset(this.page, {
-            authorize: {},
-        });
-        await qawolf.saveState(this.page, VIRTUAL_SIGNUP_STATE);
     }
 
     async realAccountSignup(options) {
@@ -281,8 +289,8 @@ class Common {
         await this.fillAddressDetails();
         await this.fillTermsAndConditions();
         await this.waitForAccountDropdown();
-        await this.removeLoginState(VIRTUAL_SIGNUP_STATE);
-        await qawolf.saveState(this.page, REAL_SIGNUP_STATE);
+        // await this.removeLoginState('VIRTUAL');
+        // await this.saveState('REAL');
     }
 
     async fillTermsAndConditions() {
@@ -379,12 +387,13 @@ class Common {
     }
 
     async hasState() {
-        return this.checkIfStateExists(VIRTUAL_SIGNUP_STATE);
+        return this.checkIfStateExists('VIRTUAL');
     }
 
     async loadStateVRTC() {
-        await qawolf.setState(this.page, VIRTUAL_SIGNUP_STATE);
-        await this.page.reload();
+        const storageState = JSON.parse(process.env.VIRTUAL);
+        const context = await this.page.browser().newContext({ storageState });
+        this.page = context.newPage();
     }
 
     async blockExternals() {
@@ -394,29 +403,14 @@ class Common {
     }
 
     checkIfStateExists = target => {
-        try {
-            const state_path = path.resolve(target);
-            const result = fs.existsSync(state_path);
-            if (result) {
-                const content = JSON.parse(fs.readFileSync(path.resolve(target), 'utf-8'));
-                if (
-                    !content.localStorage['client.accounts'] ||
-                    (content.localStorage['config.server_url'] &&
-                        content.localStorage['config.server_url'] !== process.env.QABOX_SERVER)
-                ) {
-                    // remove the file and allow redirection
-                    fs.unlinkSync(state_path);
-                    return false;
-                }
-            }
-            return result;
-        } catch (e) {
-            return false;
+        if (process.env[target]) {
+            return true;
         }
+        return false;
     };
 
-    removeLoginState = (target = LOGIN_STATE_PATH) => {
-        fs.unlinkSync(path.resolve(target));
+    removeLoginState = target => {
+        delete process.env[target];
     };
 }
 
