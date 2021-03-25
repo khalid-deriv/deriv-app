@@ -4,7 +4,7 @@ import { Button, DesktopWrapper, Icon, MobileWrapper, Popover } from '@deriv/com
 import { routes, formatMoney, PlatformContext } from '@deriv/shared';
 import { localize, Localize } from '@deriv/translations';
 import { LoginButton } from './login-button.jsx';
-import { SignupButton } from './signup-button.jsx';
+import SignupButton from './signup-button.jsx';
 import ToggleNotifications from './toggle-notifications.jsx';
 import { BinaryLink } from '../../Routes';
 import 'Sass/app/_common/components/account-switcher.scss';
