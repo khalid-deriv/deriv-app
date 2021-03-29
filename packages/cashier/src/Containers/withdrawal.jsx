@@ -4,6 +4,7 @@ import { Localize } from '@deriv/translations';
 import { isCryptocurrency, isDesktop } from '@deriv/shared';
 import { connect } from 'Stores/connect';
 import Withdraw from '../Components/withdraw.jsx';
+import WithdrawCrypto from '../Components/withdraw-crypto.jsx';
 import SendEmail from '../Components/Email/send-email.jsx';
 import Error from '../Components/Error/error.jsx';
 import NoBalance from '../Components/Error/no-balance.jsx';
@@ -41,6 +42,7 @@ const Withdrawal = ({
     balance,
     container,
     currency,
+    current_currency_type,
     error,
     verify_error,
     iframe_url,
@@ -75,6 +77,9 @@ const Withdrawal = ({
 
     if (verification_code || iframe_url) {
         return <Withdraw />;
+    }
+    if (current_currency_type === 'crypto') {
+        return <WithdrawCrypto />;
     }
     if (is_virtual) {
         return <Virtual />;
@@ -112,6 +117,7 @@ Withdrawal.propTypes = {
 export default connect(({ client, modules }) => ({
     balance: client.balance,
     currency: client.currency,
+    current_currency_type: client.current_currency_type,
     is_virtual: client.is_virtual,
     verification_code: client.verification_code.payment_withdraw,
     container: modules.cashier.config.withdraw.container,
