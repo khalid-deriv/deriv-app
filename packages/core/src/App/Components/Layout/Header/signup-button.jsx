@@ -12,10 +12,15 @@ const SignupButton = ({ className, is_dashboard, pushDataLayer }) => (
         has_effect
         text={localize('Sign up')}
         onClick={() => {
-            pushDataLayer({
+            // console.log(localStorage);
+            const gtm_data = {
                 event: 'signup',
-                visitor_ID: 'a1234',
-            });
+                element_id: 'dt_signup_button',
+                action: 'click',
+                system_language: window.navigator.language,
+                user_agent: window.navigator.userAgent,
+            };
+            pushDataLayer(gtm_data);
             redirectToSignUp({ is_dashboard });
         }}
         primary
