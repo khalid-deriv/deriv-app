@@ -20,6 +20,10 @@ const WithdrawalSideNote = () => {
             i18n_default_text='Do not enter an address linked to an ICO purchase or crowdsale. If you do, the ICO tokens will not be credited into your account.'
             key={0}
         />,
+        <Localize
+            i18n_default_text='It may take up to 6 confirmations for your funds to be reflected in your destination wallet.'
+            key={1}
+        />,
         /*
         <Localize
             i18n_default_text='Each transaction will be confirmed once we receive three confirmations from the blockchain.'
@@ -37,6 +41,18 @@ const WithdrawalSideNote = () => {
 
     return <SideNote has_bullets notes={notes} title={side_note_title} />;
 };
+
+// const CryptoWithdrawSideNotes = () => {
+//     const notes = [
+//         <Localize
+//             i18n_default_text='It may take up to 6 confirmations for your funds to be reflected in your destination wallet.'
+//             key={1}
+//         />,
+//     ];
+//     const side_note_title = <Localize i18n_default_text='Notes' />;
+
+//     return <SideNote has_bullets notes={notes} title={side_note_title} />;
+// };
 
 const Withdrawal = ({
     balance,
@@ -62,13 +78,16 @@ const Withdrawal = ({
     }, [container, setActiveTab, setErrorMessage]);
 
     React.useEffect(() => {
-        if ((iframe_url || verification_code) && isDesktop()) {
-            if (isCryptocurrency(currency) && typeof setSideNotes === 'function') {
+        if (isCryptocurrency(currency) && typeof setSideNotes === 'function') {
+            if ((iframe_url || verification_code) && isDesktop()) {
                 const side_notes = [
                     <WithdrawalSideNote key={0} />,
                     ...(/^(UST)$/i.test(currency) ? [<USDTSideNote type='usdt' key={1} />] : []),
                     ...(/^(eUSDT)$/i.test(currency) ? [<USDTSideNote type='eusdt' key={1} />] : []),
                 ];
+                setSideNotes(side_notes);
+            } else if (current_currency_type === 'crypto') {
+                const side_notes = [<WithdrawalSideNote key={0} />];
                 setSideNotes(side_notes);
             } else setSideNotes(null);
         }
