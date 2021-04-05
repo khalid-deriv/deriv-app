@@ -1,8 +1,9 @@
 import PropTypes from 'prop-types';
 import React from 'react';
-import { FormSubmitButton, Icon, Input, Text } from '@deriv/components';
+import { FormSubmitButton, Icon, Input, Loading, Text } from '@deriv/components';
+import { getDecimalPlaces, getCurrencyDisplayCode, getCurrencyName, validNumber } from '@deriv/shared';
 import { Field, Formik, Form } from 'formik';
-import { localize, Localize } from '@deriv/translations';
+import { localize } from '@deriv/translations';
 import { connect } from 'Stores/connect';
 
 const WithdrawCrypto = ({ selected_from }) => {
@@ -28,6 +29,8 @@ const WithdrawCrypto = ({ selected_from }) => {
         return undefined;
     };
 
+    const validateWalletAddress = address => {};
+
     const handleSubmitForm = values => {
         console.log(values);
     };
@@ -41,22 +44,12 @@ const WithdrawCrypto = ({ selected_from }) => {
                         amount: '',
                     }}
                     onSubmit={() => {
-                        setIsTransferConfirm(true);
+                        console.log('Submitted');
                     }}
                 >
-                    {({
-                        values,
-                        errors,
-                        isSubmitting,
-                        isValid,
-                        touched,
-                        setFieldValue,
-                        setFieldTouched,
-                        setFieldError,
-                        handleChange,
-                    }) => (
+                    {({ values, errors, isSubmitting, isValid, touched, setFieldTouched, handleChange }) => (
                         <React.Fragment>
-                            {isSubmitting || accounts_list.length === 0 ? (
+                            {isSubmitting ? (
                                 <div className='cashier__loader-wrapper'>
                                     <Loading className='cashier__loader' is_fullscreen={false} />
                                 </div>
@@ -72,15 +65,19 @@ const WithdrawCrypto = ({ selected_from }) => {
                                         {localize('Withdraw to your crypto currency wallet')}
                                     </Text>
                                     <Icon icon='IcCurrencyBtc' className='withdraw-crypto__icon' size={128} />
-                                    <Input
-                                        className='withdraw-crypto__address'
-                                        type='text'
-                                        name='wallet_address'
-                                        autoComplete='off' // prevent chrome autocomplete
-                                        label={localize('Wallet address')}
-                                        value={values.wallet_address}
-                                        onChange={handleChange}
-                                    />
+                                    <Field name='wallet_address' validate={validateWalletAddress}>
+                                        {({ field }) => (
+                                            <Input
+                                                {...field}
+                                                className='withdraw-crypto__address'
+                                                type='text'
+                                                autoComplete='off' // prevent chrome autocomplete
+                                                label={localize('Wallet address')}
+                                                value={values.wallet_address}
+                                                onChange={handleChange}
+                                            />
+                                        )}
+                                    </Field>
                                     <Field name='amount' validate={validateAmount}>
                                         {({ field }) => (
                                             <Input
@@ -88,7 +85,6 @@ const WithdrawCrypto = ({ selected_from }) => {
                                                 className='withdraw-crypto__amount'
                                                 label={localize('Amount')}
                                                 type='text'
-                                                name='amount'
                                                 autoComplete='off' // prevent chrome autocomplete
                                                 error={touched.amount && errors.amount ? errors.amount : ''}
                                                 required
@@ -107,7 +103,9 @@ const WithdrawCrypto = ({ selected_from }) => {
                                         label={localize('Withdraw')}
                                         primary
                                         large
-                                        is_disabled={!(values.wallet_address && values.amount)}
+                                        is_disabled={
+                                            !(values.wallet_address && values.amount) || !isValid || isSubmitting
+                                        }
                                     />
                                 </Form>
                             )}
