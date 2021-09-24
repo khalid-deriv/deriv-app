@@ -141,6 +141,10 @@ const htmlOutputConfig = is_release => ({
               removeComments: true,
               removeRedundantAttributes: true,
               useShortDoctype: true,
+              inject: 'head',
+              templateContent: `
+                <meta value="${process.env.VERSION}" />
+              `,
           },
 });
 
