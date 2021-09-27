@@ -285,7 +285,7 @@ define("./service-worker.js",['./workbox-c5a866fd'], function (workbox) { 'use s
     "revision": "42aef8c3f7b39e52912f17865f43842d"
   }, {
     "url": "/bot/js/bot-web-ui.main.js",
-    "revision": "d347bbff2c2bc9c29a388ab3924a47ad"
+    "revision": "c1aa8311d1d4fcf1f5997288fc62f4eb"
   }, {
     "url": "/bot/js/bot.dalembert-xml.0eec93dcff0e44a79831.js",
     "revision": "d05429f8a2c254794fcabbe5c8122496"
@@ -380,7 +380,7 @@ define("./service-worker.js",['./workbox-c5a866fd'], function (workbox) { 'use s
     "url": "/js/core.ach-json.807926f47fb30e8587c5.js",
     "revision": null
   }, {
-    "url": "/js/core.bot.9d971f623f17dd7350d4.js",
+    "url": "/js/core.bot.d410ab78049c1c48bd15.js",
     "revision": null
   }, {
     "url": "/js/core.cashier.90c18218d571d7a69cee.js",
@@ -464,7 +464,7 @@ define("./service-worker.js",['./workbox-c5a866fd'], function (workbox) { 'use s
     "url": "/js/core.main~components_src_components_l.0520e1e4824f10b3707b.js",
     "revision": null
   }, {
-    "url": "/js/core.main~s.75e04dcb01de04ff01ae.js",
+    "url": "/js/core.main~s.6ad4f71a6b408166a2e1.js",
     "revision": null
   }, {
     "url": "/js/core.pl-json.627ab8ddaa88010a96d1.js",
@@ -572,16 +572,16 @@ define("./service-worker.js",['./workbox-c5a866fd'], function (workbox) { 'use s
     "url": "/js/core.vi-json.fff8729575fa941f3b01.js",
     "revision": null
   }, {
-    "url": "/js/core.welcome-modal~Ap.c9abf8764d13ca3fd878.js",
+    "url": "/js/core.welcome-modal~Ap.5e08a333faefe24d2774.js",
     "revision": null
   }, {
     "url": "/js/core.welcome-modal~Assets_SvgComponents_onboarding_cfds_svg_af25ac66.147285bbec28895e2681.js",
     "revision": null
   }, {
-    "url": "/js/core.welcome-modal~Assets_SvgComponents_onboarding_digital-options-mobile_svg_a765406b.2273f79bbcb911d924f7.js",
+    "url": "/js/core.welcome-modal~Assets_SvgComponents_onboarding_digital-options-mobile_svg_a765406b.50ee8c80d79d665e656c.js",
     "revision": null
   }, {
-    "url": "/js/core.welcome-modal~Assets_SvgComponents_onboarding_digital-options_svg_6a6a8cad.5060ed06ef056154f3ea.js",
+    "url": "/js/core.welcome-modal~Assets_SvgComponents_onboarding_digital-options_svg_6a6a8cad.3f076158b31e483514d3.js",
     "revision": null
   }, {
     "url": "/js/core.welcome-modal~Assets_SvgComponents_onboarding_multipliers-mobile_svg_48db1f53.a535629de715112465ab.js",
